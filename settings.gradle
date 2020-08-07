@@ -1,0 +1,4 @@
+include ':infra'
+include ':domain'
+include ':app'
+rootProject.name = "TodoApp"
