@@ -7,5 +7,5 @@ data class Task(
     val description: String? = null,
     val isDone: Boolean = false
 ) {
-
+    fun toggleIsDone(): Task = this.copy(isDone = !this.isDone)
 }

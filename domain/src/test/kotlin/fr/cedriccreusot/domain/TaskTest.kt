@@ -30,6 +30,12 @@ class TaskTest {
 
     @Test
     fun `GIVEN filled todo list with only undone tasks WHEN completing a task THEN should have 1 task done`() {
-        TODO("YOU SHOULD IMPLEMENT IT")
+        val uuid = UUID.randomUUID()
+        val task = Task(id = uuid)
+        val todoList = mutableListOf(Task(), task, Task())
+
+        todoList[todoList.indexOf(task)] = task.toggleIsDone()
+
+        assertEquals(todoList.filter { it.isDone }.count(), 1)
     }
 }
