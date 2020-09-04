@@ -1,11 +1,12 @@
-package fr.cedriccreusot.todoapp
+package fr.cedriccreusot.todoapp.ui
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import fr.cedriccreusot.domain.Task
+import fr.cedriccreusot.domain.TaskRepository
 
-class TaskListViewModel : ViewModel() {
+class TaskListViewModel(private val taskRepository: TaskRepository) : ViewModel() {
     private val taskList: MutableLiveData<List<Task>> = MutableLiveData()
 
     init {

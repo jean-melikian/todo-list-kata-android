@@ -1,4 +1,4 @@
-package fr.cedriccreusot.todoapp
+package fr.cedriccreusot.todoapp.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,15 +11,25 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import fr.cedriccreusot.domain.Task
+import fr.cedriccreusot.domain.TaskRepository
+import fr.cedriccreusot.todoapp.R
+import fr.cedriccreusot.todoapp.dataadapter.TaskDatabase
+import fr.cedriccreusot.todoapp.dataadapter.TaskRepositoryImpl
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_task.view.*
 
 class MainActivity : AppCompatActivity() {
-    private val taskListViewModel = TaskListViewModel()
+    private lateinit var taskDatabase: TaskDatabase
+    private lateinit var taskRepository: TaskRepository
+    private lateinit var taskListViewModel: TaskListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        taskDatabase = TaskDatabase.create(applicationContext)
+        taskRepository = TaskRepositoryImpl(taskDatabase.getTaskDao())
+        taskListViewModel = TaskListViewModel(taskRepository)
 
         tasksRecyclerView.adapter = tasksListAdapter
         taskListViewModel.taskList().observe(this, Observer { tasks ->
@@ -29,10 +39,15 @@ class MainActivity : AppCompatActivity() {
         addItemDescriptionEditText.setOnEditorActionListener { editText, action, keyEvent ->
             if (EditorInfo.IME_ACTION_DONE == action) {
                 taskListViewModel.addItem(editText.text.toString())
+                editText.text = ""
                 true
             }
             false
         }
+    }
+
+    companion object {
+        const val DATA_STORE_TASKS = "tasks"
     }
 }
 
@@ -63,7 +78,10 @@ private val tasksListAdapter = object : ListAdapter<Task, RecyclerView.ViewHolde
 private class ItemTaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun onBind(task: Task) {
         with(itemView) {
-            taskTitleTextView.text = task.description
+            taskTitleCheckBox.apply {
+                text = task.description
+                isChecked = task.isDone
+            }
         }
     }
 }
