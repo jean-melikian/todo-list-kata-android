@@ -1,8 +1,10 @@
 package fr.cedriccreusot.domain
 
-import fr.cedriccreusot.domain.Task
+import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {
-    fun getTasks(): List<Task>
+    fun getTasks(): Flow<List<Task>>
+    fun add(description: String)
+    fun updateTask(id: Int, isDone: Boolean)
 }
 

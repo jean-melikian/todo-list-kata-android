@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         taskListViewModel = TaskListViewModel(taskRepository)
 
         tasksRecyclerView.adapter = tasksListAdapter
-        taskListViewModel.taskList().observe(this, Observer { tasks ->
+        taskListViewModel.taskList.observe(this, Observer { tasks ->
             tasksListAdapter.submitList(tasks)
         })
 
@@ -81,6 +81,9 @@ private class ItemTaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemV
             taskTitleCheckBox.apply {
                 text = task.description
                 isChecked = task.isDone
+                setOnCheckedChangeListener { _, isChecked ->
+
+                }
             }
         }
     }

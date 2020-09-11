@@ -1,28 +1,33 @@
 package fr.cedriccreusot.todoapp.ui
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import fr.cedriccreusot.domain.Task
 import fr.cedriccreusot.domain.TaskRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class TaskListViewModel(private val taskRepository: TaskRepository) : ViewModel() {
-    private val taskList: MutableLiveData<List<Task>> = MutableLiveData()
-
-    init {
-        taskList.postValue(
-            listOf(
-                Task(description = "Faire des crepes"),
-                Task(description = "Manger de la salade"),
-                Task(description = "Jouer a la roulette russe"),
-                Task(description = "Jouer a la roulette russe si toujours vivant")
-            )
-        )
-    }
-
-    fun taskList(): LiveData<List<Task>> = taskList
+    val taskList: LiveData<List<Task>> = taskRepository.getTasks().asLiveData()
 
     fun addItem(description: String) {
-        taskList.postValue(taskList.value?.plus(listOf(Task(description = description))))
+        viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.add(description)
+        }
     }
+
+    fun setTaskDone(id: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.updateTask(id = id, isDone = true)
+        }
+    }
+
+    fun setTaskUndone(id: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.updateTask(id = id, isDone = false)
+        }
+    }
+
 }
