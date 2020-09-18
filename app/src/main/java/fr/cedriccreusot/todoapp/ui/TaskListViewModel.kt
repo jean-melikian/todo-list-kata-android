@@ -18,16 +18,9 @@ class TaskListViewModel(private val taskRepository: TaskRepository) : ViewModel(
         }
     }
 
-    fun setTaskDone(id: Int) {
+    fun setTaskIsDone(isDone: Boolean, id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            taskRepository.updateTask(id = id, isDone = true)
+            taskRepository.updateTask(id = id, isDone = isDone)
         }
     }
-
-    fun setTaskUndone(id: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            taskRepository.updateTask(id = id, isDone = false)
-        }
-    }
-
 }
