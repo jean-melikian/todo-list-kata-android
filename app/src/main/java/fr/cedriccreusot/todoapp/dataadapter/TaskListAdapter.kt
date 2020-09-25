@@ -1,6 +1,10 @@
 package fr.cedriccreusot.todoapp.dataadapter
 
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
+import android.gesture.GestureOverlayView
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -18,9 +22,31 @@ private val diffCallback = object : DiffUtil.ItemCallback<Task>() {
     override fun areContentsTheSame(oldItem: Task, newItem: Task) = oldItem == newItem
 }
 
-private class ItemTaskViewHolder(itemView: View, private val onToggle: OnToggle) : RecyclerView.ViewHolder(itemView) {
+private class ItemTaskViewHolder(itemView: View, private val onToggle: OnToggle) :
+    RecyclerView.ViewHolder(itemView) {
     fun onBind(task: Task) {
         with(itemView) {
+            val animator = ObjectAnimator
+                .ofFloat(itemView, "translationX", 100f).apply {
+                    repeatCount = ValueAnimator.INFINITE
+                    repeatMode = ValueAnimator.REVERSE
+                    setCurrentFraction()
+                }
+            gestureOverlay.addOnGestureListener(object : GestureOverlayView.OnGestureListener {
+                override fun onGestureStarted(p0: GestureOverlayView?, p1: MotionEvent?) {
+                }
+
+                override fun onGesture(p0: GestureOverlayView?, p1: MotionEvent?) {
+                    taskTitleCheckBox.translationX = p1!!.x
+                }
+
+                override fun onGestureEnded(p0: GestureOverlayView?, p1: MotionEvent?) {
+                }
+
+                override fun onGestureCancelled(p0: GestureOverlayView?, p1: MotionEvent?) {
+                }
+            })
+
             taskTitleCheckBox.apply {
                 text = task.description
                 setOnCheckedChangeListener(null)
@@ -33,7 +59,8 @@ private class ItemTaskViewHolder(itemView: View, private val onToggle: OnToggle)
     }
 }
 
-class TaskListAdapter(private val onToggle: OnToggle) : ListAdapter<Task, RecyclerView.ViewHolder>(diffCallback) {
+class TaskListAdapter(private val onToggle: OnToggle) :
+    ListAdapter<Task, RecyclerView.ViewHolder>(diffCallback) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
