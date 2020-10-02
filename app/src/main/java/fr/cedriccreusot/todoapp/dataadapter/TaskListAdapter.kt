@@ -3,10 +3,8 @@ package fr.cedriccreusot.todoapp.dataadapter
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.gesture.GestureOverlayView
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.core.view.GestureDetectorCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -27,24 +25,33 @@ private class ItemTaskViewHolder(itemView: View, private val onToggle: OnToggle)
     fun onBind(task: Task) {
         with(itemView) {
             val animator = ObjectAnimator
-                .ofFloat(itemView, "translationX", 100f).apply {
-                    repeatCount = ValueAnimator.INFINITE
+                .ofFloat(taskTitleCheckBox, "translationX", measuredWidth.toFloat()).apply {
+                    repeatCount = 0
                     repeatMode = ValueAnimator.REVERSE
-                    setCurrentFraction()
                 }
+            val detector = GestureDetectorCompat(itemView.context,
+                object : GestureDetector.SimpleOnGestureListener() {
+                    override fun onFling(
+                        e1: MotionEvent?,
+                        e2: MotionEvent?,
+                        velocityX: Float,
+                        velocityY: Float
+                    ): Boolean {
+                        val result = super.onFling(e1, e2, velocityX, velocityY)
+                        animator.start()
+                        return result
+                    }
+                })
             gestureOverlay.addOnGestureListener(object : GestureOverlayView.OnGestureListener {
-                override fun onGestureStarted(p0: GestureOverlayView?, p1: MotionEvent?) {
-                }
+                override fun onGestureStarted(p0: GestureOverlayView?, p1: MotionEvent?) = Unit
 
                 override fun onGesture(p0: GestureOverlayView?, p1: MotionEvent?) {
-                    taskTitleCheckBox.translationX = p1!!.x
+                    detector.onTouchEvent(p1)
                 }
 
-                override fun onGestureEnded(p0: GestureOverlayView?, p1: MotionEvent?) {
-                }
+                override fun onGestureEnded(p0: GestureOverlayView?, p1: MotionEvent?) = Unit
 
-                override fun onGestureCancelled(p0: GestureOverlayView?, p1: MotionEvent?) {
-                }
+                override fun onGestureCancelled(p0: GestureOverlayView?, p1: MotionEvent?) = Unit
             })
 
             taskTitleCheckBox.apply {
